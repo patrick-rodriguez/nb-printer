@@ -1,5 +1,8 @@
 from docx import *
 from tkinter import *
+from PyPDF2 import PdfWriter, PdfReader
+import win32api
+import win32print
 from docx2pdf import convert
 from docx.shared import Mm
 from docx.shared import Inches
@@ -26,8 +29,8 @@ main_frame.pack(fill=BOTH, expand=1)                                            
 canvas = Canvas(main_frame)                                                                    #
 canvas.pack(side=LEFT, fill=BOTH, expand=1)                                                    #
                                                                                                #
-scrollbar = Scrollbar(main_frame, orient="horizontal", command=canvas.xview)                   #
-scrollbar.pack(side=BOTTOM, fill=X)                                                            #
+scrollbar = Scrollbar(canvas, orient="horizontal", command=canvas.xview)                   #
+scrollbar.pack(side=BOTTOM, fill="x")                                                            #
                                                                                                #
 canvas.configure(xscrollcommand=scrollbar.set)                                                 #
 canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))        #
@@ -79,7 +82,23 @@ def create_pdf(button_text):                                                    
             run.font.size = Pt(8)                                            #
                                                                              #
     document.save("test.docx")                                               #
-    convert("test.docx", "test.pdf")                                         #
+    convert("test.docx", r"C:\Users\patri\OneDrive\Documents\test.pdf")                                         #
+
+    infile = PdfReader(r"C:\Users\patri\OneDrive\Documents\test.pdf")
+    output = PdfWriter()
+
+    output.add_page(infile.pages[0])
+
+    with open(r"C:\Users\patri\OneDrive\Documents\test.pdf", "wb") as f:
+        output.write(f)
+
+    win32api.ShellExecute(0,
+                          "print",
+                         r"C:\Users\patri\OneDrive\Documents\test.pdf",
+                          'd: "%s"' % win32print.GetDefaultPrinter(),
+                          ".",
+                          0
+                          )
 #----------------------------------------------------------------------------#
 
 number_of_rocks = len(rock_name_list)
